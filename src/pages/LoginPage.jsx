@@ -326,6 +326,9 @@ export default function LoginPage() {
               >
                 {loading ? "Đang đăng nhập..." : "Đăng nhập"}
               </button>
+              <p style={{ marginTop: 16 }}>
+                Don&apos;t have an account? <a href="/register">Create account</a>
+              </p>
             </form>
 
             <p

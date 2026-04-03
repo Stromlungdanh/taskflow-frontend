@@ -7,3 +7,6 @@ export const loginApi = (data) => {
 export const refreshTokenApi = (refreshToken) => {
   return axiosClient.post("/api/auth/refresh", { refreshToken });
 };
+export const registerApi = (data) => {
+  return axiosClient.post("/api/auth/register", data);
+};
