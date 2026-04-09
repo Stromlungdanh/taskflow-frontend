@@ -62,7 +62,18 @@ function TaskCard({ task, index, onDeleteTask, onUpdateTask, onUpdateTaskStatus,
   );
 }
 
-function BoardColumn({ status, tasks, members, onCreateTask, onDeleteTask, onUpdateTask, onUpdateTaskStatus, canManageTasks, currentUserId }) {
+function BoardColumn({
+  status,
+  tasks,
+  members,
+  onCreateTask,
+  onDeleteTask,
+  onUpdateTask,
+  onUpdateTaskStatus,
+  canCreateTask,
+  canManageTasks,
+  currentUserId
+}) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', priority: 'MEDIUM', assigneeId: '' });
   const handleSubmit = async () => {
@@ -74,9 +85,9 @@ function BoardColumn({ status, tasks, members, onCreateTask, onDeleteTask, onUpd
     <div style={{ flex: 1, minWidth: 320, background: '#f8fafc', borderRadius: 12, padding: 16, border: '1px solid #e5e7eb' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <h3 style={{ margin: 0 }}>{status}</h3>
-        {canManageTasks && <button onClick={() => setShowForm(!showForm)} style={{ background: '#2563eb', color: 'white', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>+ Add task</button>}
+        {canCreateTask  && <button onClick={() => setShowForm(!showForm)} style={{ background: '#2563eb', color: 'white', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>+ Add task</button>}
       </div>
-      {canManageTasks && showForm && <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: 12, marginBottom: 12 }}>
+      {canCreateTask && showForm && <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: 12, marginBottom: 12 }}>
         <input placeholder="Task title" value={form.title} onChange={(e)=>setForm({...form,title:e.target.value})} style={{ width:'100%', padding:8, borderRadius:6, border:'1px solid #d1d5db', marginBottom:8, boxSizing:'border-box' }} />
         <textarea placeholder="Description" rows={3} value={form.description} onChange={(e)=>setForm({...form,description:e.target.value})} style={{ width:'100%', padding:8, borderRadius:6, border:'1px solid #d1d5db', marginBottom:8, boxSizing:'border-box' }} />
         <select value={form.priority} onChange={(e)=>setForm({...form,priority:e.target.value})} style={{ width:'100%', padding:8, borderRadius:6, border:'1px solid #d1d5db', marginBottom:8 }}><option value="LOW">LOW</option><option value="MEDIUM">MEDIUM</option><option value="HIGH">HIGH</option></select>
@@ -140,6 +151,7 @@ export default function TaskPage() {
   const canManageMembers = !!permission?.canManageMembers;
   const canManageTasks = !!permission?.canManageTasks;
   const currentUserId = permission?.userId;
+  const canCreateTask = !!permission?.projectRole;
   const usersCanAdd = allUsers.filter((user) => !members.some((member) => Number(member.id) === Number(user.id)));
 
   return (
@@ -169,7 +181,21 @@ export default function TaskPage() {
       </div>
       <DragDropContext onDragEnd={onDragEnd}>
         <div style={{ display:'flex', gap:16, alignItems:'flex-start', overflowX:'auto' }}>
-          {STATUS_COLUMNS.map((column) => <BoardColumn key={column.key} status={column.key} tasks={tasks.filter((task) => task.status === column.key)} members={members} onCreateTask={handleCreateTask} onDeleteTask={handleDeleteTask} onUpdateTask={handleUpdateTask} onUpdateTaskStatus={handleUpdateTaskStatus} canManageTasks={canManageTasks} currentUserId={currentUserId} />)}
+          {STATUS_COLUMNS.map((column) => (
+            <BoardColumn
+              key={column.key}
+              status={column.key}
+              tasks={tasks.filter((task) => task.status === column.key)}
+              members={members}
+              onCreateTask={handleCreateTask}
+              onDeleteTask={handleDeleteTask}
+              onUpdateTask={handleUpdateTask}
+              onUpdateTaskStatus={handleUpdateTaskStatus}
+              canCreateTask={canCreateTask}
+              canManageTasks={canManageTasks}
+              currentUserId={currentUserId}
+            />
+          ))}
         </div>
       </DragDropContext>
     </Layout>
